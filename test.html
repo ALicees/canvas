@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas"></canvas>
+    <script>
+        var c = document.getElementById("myCanvas");
+        var canCon = c.getContext("2d");
+        var w, h;
+        var aColor = ["#eb9019", "#ff6197", "#00343f", "#cc9b6a"];
+        var aBubble = [];
+        size();
+
+        function size() {
+            window.onresize = arguments.callee;
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canCon.width = w;
+            canCon.height = h;
+        }
+
+        function random(min, max) { //得到min到max之间的值
+            return Math.random() * (max - min) + min;
+        }
+
+        function Bubble() {} //小球球的DNA
+        //DNA上的基因
+        Bubble.prototype = {
+            init: function() { //出厂基本配置，初始基因
+                this.x = random(0, w); //从最左到最又
+                this.y = random(0, h);
+                this.r = random(1, 5);
+                this.color = aColor[Math.floor(random(0, 5))];
+                this.vx = random(-1, 1);
+                this.vy = random(-1, 1);
+            },
+            draw: function() { //绘制路径
+                canCon.beginPath();
+                //canCon.clearRect(0, 0, w, h);
+                canCon.fillStyle = this.color;
+                canCon.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                canCon.fill();
+            },
+            move: function() {
+                this.x += this.vx
+                this.y += this.vy;
+                if (this.x - this.r < 0 || this.x + this.r > w) {
+                    this.vx = -this.vx;
+                }
+                if (this.y - this.r < 0 || this.y + this.r > h) {
+                    this.vy = -this.vy;
+                }
+                this.draw();
+            }
+        }
+
+
+        function create(num) {
+            for (i = 0; i < num; i++) {
+                var bubble = new Bubble(); //继承DNA
+                bubble.init(); //基因表达
+                bubble.draw(); //
+                aBubble.push(bubble);
+            }
+        }
+        create(1000);
+        setInterval(function() {
+            canCon.clearRect(0, 0, w, h);
+            for (var item of aBubble) {
+                //for of 数组里面 每一个元素
+                //for in     每一个元素的下标
+                item.move();
+            }
+        }, 1000 / 60)
+    </script>
+</body>
+
+</html>
